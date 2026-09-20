@@ -1,7 +1,6 @@
 import pandas as pd
 from predict import estimate_price
 
-# Mean Absolute Error
 
 def main():
     data = pd.read_csv("data.csv")

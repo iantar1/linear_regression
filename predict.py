@@ -1,4 +1,4 @@
-from train import train, visualise, load_thetas, JSON_FILE_PATH
+from train import train, visualise, JSON_FILE_PATH
 import json
 
 def load_thetas():
