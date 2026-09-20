@@ -1,15 +1,51 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+import json
 
 
-def denormalize(t0_scaled, t1_scaled, mean, std):
-    theta1 = t1_scaled / std
-    theta0 = t0_scaled - (t1_scaled * mean / std)
-    return theta0, theta1
+def visualise(thetas, mileage_to_predect = None):
+    data = pd.read_csv("data.csv")
 
+    data = data.sort_values("km")
 
-def train():
+    x = data["km"]
+    y = data["price"]
+    std = np.std(x)
+    x = (x - np.mean(x)) / np.std(x)
+    predicted_y = thetas["theta0"] + thetas["theta1"] * x
+
+    plt.scatter(x, y)
+    plt.plot(x, predicted_y)
+    if mileage_to_predect is not None:
+        # Normalize the given mileage
+        normalized_mileage = (mileage_to_predect - thetas["mean"]) / thetas["std"]
+
+        # Predict its price
+        predicted_price = thetas["theta0"] + thetas["theta1"] * normalized_mileage
+
+        # Draw the point in red
+        plt.scatter(
+            normalized_mileage,
+            predicted_price,
+            color="red"
+        )
+    plt.xlabel("Kilometers")
+    plt.ylabel("Price")
+    plt.title("cars")
+    plt.show()
+
+def store_result(theta0, theta1, mean, std):
+    data = {
+        "theta0": theta0,
+        "theta1": theta1,
+        "mean" : mean,
+        "std" : std
+    }
+    with open("thetas.json", "w") as file:
+        json.dump(data, file)
+
+def train(): #gradient_descent
     data = pd.read_csv("data.csv")
 
     data = data.sort_values("km")
@@ -17,19 +53,11 @@ def train():
     x = data["km"]
     y = data["price"]
 
-
-
-
     # model : estimatePrice  = theta0 ​ + theta0 ​* mileage 
-
 
     # you have to find theta0 and theta1
 
-
-
-    plt.xlabel("Kilometers")
-    plt.ylabel("Price")
-    plt.title("cars")
+    
 
 
     theta0 = 0
@@ -52,37 +80,8 @@ def train():
             tmp_theta1 += learningRate * error * x[i] * (1/m)
         theta0 = theta0 - tmp_theta0
         theta1 = theta1 - tmp_theta1
-    theta0, theta1 = denormalize(theta0, theta1, mean, std)
-    return theta0, theta1
+    store_result(theta0, theta1, mean, std)
 
-def normalise():
-    pass
+if __name__ == "__main__":
+    train()
 
-def getMeanStd():
-    data = pd.read_csv("data.csv")
-
-    data = data.sort_values("km")
-
-    x = data["km"]
-    mean = np.mean(x)
-    std = np.std(x)
-    return mean, std
-
-def visialse(theta0, theta1):
-    data = pd.read_csv("data.csv")
-
-    data = data.sort_values("km")
-
-    x = data["km"]
-    predicted_y = theta0 + theta1 * x
-
-    xx = (61789 - mean) / std
-    print(theta0 + theta1 * xx)
-    plt.scatter(x, y)
-    # print(theta0)
-    # print(theta1)
-    # print(predicted_y)
-    plt.plot(x, predicted_y)
-
-
-    plt.show()
