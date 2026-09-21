@@ -8,12 +8,10 @@ JSON_FILE_PATH = "thetas.json"
 def visualise(thetas, mileage_to_predict = None):
     data = pd.read_csv("data.csv")
 
-    data = data.sort_values("km")
-
     x = data["km"]
     y = data["price"]
     std = np.std(x)
-    x = (x - np.mean(x)) / np.std(x)
+    x = normalize(x)
     predicted_y = thetas["theta0"] + thetas["theta1"] * x
 
     plt.scatter(x, y)
@@ -55,7 +53,7 @@ def gradient_descent(km, price, learning_rate=0.01, iterations=1000):
     theta1 = 0
     n_samples = len(km)
 
-    for epoch in range(iterations):
+    for _ in range(iterations):
         tmp_theta0 = 0
         tmp_theta1 = 0
         for i in range(n_samples):
